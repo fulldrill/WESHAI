@@ -1,0 +1,280 @@
+Started by user Bright Litandaze
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /Users/weshgawd/.jenkins/workspace/WESHAIPIPELINE
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Fetchout Git)
+[Pipeline] git
+The recommended git tool is: NONE
+using credential gituser
+ > git rev-parse --resolve-git-dir /Users/weshgawd/.jenkins/workspace/WESHAIPIPELINE/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/fulldrill/WESHAI.git # timeout=10
+Fetching upstream changes from https://github.com/fulldrill/WESHAI.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.39.5 (Apple Git-154)'
+using GIT_ASKPASS to set credentials full drillzone
+ > git fetch --tags --force --progress -- https://github.com/fulldrill/WESHAI.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision dddfa36cd1b4217cb9067208d963898588b6241b (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f dddfa36cd1b4217cb9067208d963898588b6241b # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master dddfa36cd1b4217cb9067208d963898588b6241b # timeout=10
+Commit message: "Wesh Commit1"
+ > git rev-list --no-walk 958bb475162726ba6aeb5ef6d083c3b9c1a77c1b # timeout=10
+[Pipeline] echo
+Fetching Done
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Install Requirements)
+[Pipeline] sh
++ export PATH=/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin
++ PATH=/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin
++ echo 'Brew home set'
+Brew home set
++ echo 'Installing depenciedencies'
+Installing depenciedencies
++ pip3 install -r requirements.txt
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: psycopg2-binary in /Users/weshgawd/Library/Python/3.9/lib/python/site-packages (from -r requirements.txt (line 1)) (2.9.10)
++ cd /Users/weshgawd/.jenkins/workspace/WESHAIPIPELINE
++ pip3 install -r soccer_schema/requirements.txt
+Defaulting to user installation because normal site-packages is not writeable
+Collecting sqlalchemy (from -r soccer_schema/requirements.txt (line 1))
+  Downloading sqlalchemy-2.0.43-py3-none-any.whl.metadata (9.6 kB)
+Collecting psycopg2 (from -r soccer_schema/requirements.txt (line 2))
+  Using cached psycopg2-2.9.10.tar.gz (385 kB)
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Collecting python-dotenv (from -r soccer_schema/requirements.txt (line 3))
+  Downloading python_dotenv-1.1.1-py3-none-any.whl.metadata (24 kB)
+Collecting typing-extensions>=4.6.0 (from sqlalchemy->-r soccer_schema/requirements.txt (line 1))
+  Downloading typing_extensions-4.14.1-py3-none-any.whl.metadata (3.0 kB)
+Downloading sqlalchemy-2.0.43-py3-none-any.whl (1.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 35.8 MB/s  0:00:00
+Downloading python_dotenv-1.1.1-py3-none-any.whl (20 kB)
+Downloading typing_extensions-4.14.1-py3-none-any.whl (43 kB)
+Building wheels for collected packages: psycopg2
+  DEPRECATION: Building 'psycopg2' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'psycopg2'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for psycopg2 (setup.py): started
+  Building wheel for psycopg2 (setup.py): finished with status 'done'
+  Created wheel for psycopg2: filename=psycopg2-2.9.10-cp39-cp39-macosx_10_9_universal2.whl size=241874 sha256=cd85302181543d1f240affa55f7ea2a3da9ecd6169870f4985ae6263251d935f
+  Stored in directory: /Users/weshgawd/Library/Caches/pip/wheels/a3/f0/13/36dd45ba7a971c79ded4f3003e5f4652d262195d0e8ea8f249
+Successfully built psycopg2
+Installing collected packages: typing-extensions, python-dotenv, psycopg2, sqlalchemy
+  WARNING: The script dotenv is installed in '/Users/weshgawd/Library/Python/3.9/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+
+Successfully installed psycopg2-2.9.10 python-dotenv-1.1.1 sqlalchemy-2.0.43 typing-extensions-4.14.1
+[Pipeline] echo
+stage: Install requirements skipped!!
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Create User)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ python3 soccer_schema/cr8postgresadminuser.py
+✅ Superuser 'FOOTYADMIN' created successfully.
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Create Schema Metadata)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ python3 soccer_schema/main.py
+✅ Schema created in PostgreSQL
+
+CREATE TABLE event_type (
+	event_type_id SERIAL NOT NULL, 
+	name VARCHAR NOT NULL, 
+	description VARCHAR, 
+	PRIMARY KEY (event_type_id)
+)
+
+;
+
+CREATE TABLE league (
+	league_id SERIAL NOT NULL, 
+	name VARCHAR NOT NULL, 
+	country VARCHAR NOT NULL, 
+	tier_level INTEGER, 
+	PRIMARY KEY (league_id)
+)
+
+;
+
+CREATE TABLE player (
+	player_id SERIAL NOT NULL, 
+	first_name VARCHAR, 
+	last_name VARCHAR, 
+	dob DATE, 
+	nationality VARCHAR, 
+	primary_position VARCHAR, 
+	PRIMARY KEY (player_id)
+)
+
+;
+
+CREATE TABLE referee (
+	referee_id SERIAL NOT NULL, 
+	first_name VARCHAR, 
+	last_name VARCHAR, 
+	nationality VARCHAR, 
+	PRIMARY KEY (referee_id)
+)
+
+;
+
+CREATE TABLE venue (
+	venue_id SERIAL NOT NULL, 
+	name VARCHAR NOT NULL, 
+	city VARCHAR, 
+	capacity INTEGER, 
+	PRIMARY KEY (venue_id)
+)
+
+;
+
+CREATE TABLE season (
+	season_id SERIAL NOT NULL, 
+	league_id INTEGER NOT NULL, 
+	year_start INTEGER NOT NULL, 
+	year_end INTEGER NOT NULL, 
+	PRIMARY KEY (season_id), 
+	FOREIGN KEY(league_id) REFERENCES league (league_id)
+)
+
+;
+
+CREATE TABLE team (
+	team_id SERIAL NOT NULL, 
+	name VARCHAR NOT NULL, 
+	home_venue_id INTEGER, 
+	founded_year INTEGER, 
+	PRIMARY KEY (team_id), 
+	FOREIGN KEY(home_venue_id) REFERENCES venue (venue_id)
+)
+
+;
+
+CREATE TABLE match (
+	match_id SERIAL NOT NULL, 
+	season_id INTEGER NOT NULL, 
+	date DATE NOT NULL, 
+	kick_off_time TIME WITHOUT TIME ZONE, 
+	venue_id INTEGER, 
+	referee_id INTEGER, 
+	PRIMARY KEY (match_id), 
+	FOREIGN KEY(season_id) REFERENCES season (season_id), 
+	FOREIGN KEY(venue_id) REFERENCES venue (venue_id), 
+	FOREIGN KEY(referee_id) REFERENCES referee (referee_id)
+)
+
+;
+
+CREATE TABLE team_season (
+	team_season_id SERIAL NOT NULL, 
+	team_id INTEGER NOT NULL, 
+	season_id INTEGER NOT NULL, 
+	coach VARCHAR, 
+	final_position INTEGER, 
+	PRIMARY KEY (team_season_id), 
+	FOREIGN KEY(team_id) REFERENCES team (team_id), 
+	FOREIGN KEY(season_id) REFERENCES season (season_id)
+)
+
+;
+
+CREATE TABLE match_event (
+	event_id SERIAL NOT NULL, 
+	match_id INTEGER NOT NULL, 
+	event_type_id INTEGER NOT NULL, 
+	minute INTEGER, 
+	team_season_id INTEGER NOT NULL, 
+	player_id INTEGER, 
+	related_player_id INTEGER, 
+	PRIMARY KEY (event_id), 
+	FOREIGN KEY(match_id) REFERENCES match (match_id), 
+	FOREIGN KEY(event_type_id) REFERENCES event_type (event_type_id), 
+	FOREIGN KEY(team_season_id) REFERENCES team_season (team_season_id), 
+	FOREIGN KEY(player_id) REFERENCES player (player_id), 
+	FOREIGN KEY(related_player_id) REFERENCES player (player_id)
+)
+
+;
+
+CREATE TABLE match_team (
+	match_team_id SERIAL NOT NULL, 
+	match_id INTEGER NOT NULL, 
+	team_season_id INTEGER NOT NULL, 
+	is_home BOOLEAN NOT NULL, 
+	goals_scored INTEGER, 
+	PRIMARY KEY (match_team_id), 
+	FOREIGN KEY(match_id) REFERENCES match (match_id), 
+	FOREIGN KEY(team_season_id) REFERENCES team_season (team_season_id)
+)
+
+;
+
+CREATE TABLE player_season (
+	player_season_id SERIAL NOT NULL, 
+	player_id INTEGER NOT NULL, 
+	team_season_id INTEGER NOT NULL, 
+	squad_number INTEGER, 
+	contract_start DATE, 
+	contract_end DATE, 
+	PRIMARY KEY (player_season_id), 
+	FOREIGN KEY(player_id) REFERENCES player (player_id), 
+	FOREIGN KEY(team_season_id) REFERENCES team_season (team_season_id)
+)
+
+;
+
+CREATE TABLE team_match_stats (
+	tmstat_id SERIAL NOT NULL, 
+	match_id INTEGER NOT NULL, 
+	team_season_id INTEGER NOT NULL, 
+	possession_pct FLOAT, 
+	shots INTEGER, 
+	shots_on_target INTEGER, 
+	corners INTEGER, 
+	fouls INTEGER, 
+	PRIMARY KEY (tmstat_id), 
+	FOREIGN KEY(match_id) REFERENCES match (match_id), 
+	FOREIGN KEY(team_season_id) REFERENCES team_season (team_season_id)
+)
+
+;
+
+CREATE TABLE player_match_stats (
+	pmstat_id SERIAL NOT NULL, 
+	match_id INTEGER NOT NULL, 
+	player_season_id INTEGER NOT NULL, 
+	minutes_played INTEGER, 
+	goals INTEGER, 
+	assists INTEGER, 
+	yellow_cards INTEGER, 
+	red_cards INTEGER, 
+	PRIMARY KEY (pmstat_id), 
+	FOREIGN KEY(match_id) REFERENCES match (match_id), 
+	FOREIGN KEY(player_season_id) REFERENCES player_season (player_season_id)
+)
+
+;
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

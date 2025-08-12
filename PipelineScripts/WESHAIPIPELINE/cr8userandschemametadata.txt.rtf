@@ -1,0 +1,56 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 pipeline \{\
+    agent any\
+\
+    stages \{\
+        stage('Fetchout Git')\
+        \{\
+            steps \{   git(url:'https://github.com/fulldrill/WESHAI.git',\
+                  branch:'master',\
+                  credentialsId:'gituser'\
+                )\
+                echo 'Fetching Done'\
+            \}\
+        \}\
+       stage('Install Requirements') \{\
+            steps \{\
+               sh '''    \
+               export PATH="/opt/homebrew/bin:$PATH"\
+               echo 'Brew home set'\
+               echo 'Installing depenciedencies'\
+               pip3 install -r requirements.txt\
+               \
+               cd $WORKSPACE\
+               pip3 install -r soccer_schema/requirements.txt\
+               '''\
+               echo 'stage: Install requirements skipped!!'\
+            \}\
+        \}\
+     stage('Create User') \{\
+            steps \{\
+            script \{\
+            def result = sh(script: 'python3 soccer_schema/cr8postgresadminuser.py', returnStatus: true)\
+            if (result != 0) \{\
+                error("\uc0\u10060  Create user script failed.")\
+            \}\
+           \}\
+        \}\
+    \}\
+     stage('Create Schema Metadata') \{\
+            steps \{\
+            script \{\
+            def result = sh(script: 'python3 soccer_schema/main.py', returnStatus: true)\
+            if (result != 0) \{\
+                error("\uc0\u10060  Create  schema metadata  script failed.")\
+            \}\
+           \}\
+        \}\
+    \}\
+ \}\
+\}}
